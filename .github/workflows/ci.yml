@@ -38,6 +38,6 @@ jobs:
       # present, so -m "not integration" alone still ends in INTERNALERROR.
       - name: Run tests with coverage
         run: |
-          ./venv/bin/python -m pytest tests/ -q --cov=app --cov-report=term-missing \
+          ./venv/bin/python -m pytest tests/ -q --cov=app --cov-report=term-missing --cov-fail-under=71 \
             --ignore=tests/integration -m "not integration"
 
