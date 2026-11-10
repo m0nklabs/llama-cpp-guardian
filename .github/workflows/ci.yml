@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests (pytest + coverage)
+    runs-on: [self-hosted, Linux]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      # The suite runs scripts/* through REPO_ROOT/venv/bin/python
+      # (tests/unit/test_capture_keanu_tools.py), so the venv the repo documents in
+      # AGENTS.md is created here instead of relying on a global interpreter.
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          ./venv/bin/python -m pip install --upgrade pip
+          ./venv/bin/python -m pip install -r requirements.txt -r requirements-dev.txt
+
+      # tests/integration is excluded by path AND marker: its module-level pytestmark calls
+      # _guardian_reachable(), which aborts collection (SystemExit) when no live API key is
+      # present, so -m "not integration" alone still ends in INTERNALERROR.
+      - name: Run tests with coverage
+        run: |
+          ./venv/bin/python -m pytest tests/ -q --cov=app --cov-report=xml \
+            --ignore=tests/integration -m "not integration"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: true

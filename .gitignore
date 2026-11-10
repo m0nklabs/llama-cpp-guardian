@@ -72,3 +72,8 @@ data/cloud_catalog_cache.json.lock
 
 # Terminal Paste Image folder
 /.cp-images
+
+# Coverage artifacts (local runs + CI)
+.coverage
+.coverage.*
+coverage.xml

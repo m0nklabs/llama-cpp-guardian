@@ -1,0 +1,5 @@
+# Test toolchain, installed by CI (.github/workflows/ci.yml) on top of requirements.txt.
+# Runtime dependencies belong in requirements.txt, not here.
+pytest
+pytest-asyncio
+pytest-cov
