@@ -8,7 +8,6 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write  # codecov-action v6 authenticates through GitHub OIDC
   contents: read
 
 jobs:
@@ -39,12 +38,6 @@ jobs:
       # present, so -m "not integration" alone still ends in INTERNALERROR.
       - name: Run tests with coverage
         run: |
-          ./venv/bin/python -m pytest tests/ -q --cov=app --cov-report=xml \
+          ./venv/bin/python -m pytest tests/ -q --cov=app --cov-report=term-missing \
             --ignore=tests/integration -m "not integration"
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: false
-          verbose: true
